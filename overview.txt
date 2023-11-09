@@ -1,0 +1,37 @@
+-to download the data, run:
+    data/data_download.sh
+    data/data_download_viral.sh
+-then run:
+    preprocessing/preprocessing.sh
+    preprocessing/preprocessing_viral.sh
+-perform doublet detection and removal using scripts in 'preprocessing/'
+-run pyscenic and collect results using scripts in 'pyscenic/' and 'software_tools/'
+-continue data processing / analysis with scripts in 'analysis1/'
+-generate some plots with scripts in 'plots1/'
+-further process with scripts in 'analysis2/'
+
+-calculate pseudotime with Monocle3 (in R) using the files in 'analysis2/monocle3_r/' --
+-prepare files with:
+    analysis2/monocle3_r/files_mod.py
+    analysis2/monocle3_r/monocle_input_files.py
+-run Monocle3 trajectory inference with:
+    analysis2/monocle3_r/li_pt_update.R
+    analysis2/monocle3_r/yost_pt_update.R
+    analysis2/monocle3_r/wang_pt_update.R
+    analysis2/monocle3_r/wang_pt_update2.R
+-collect output with:
+    analysis2/monocle3_r/pt_collect_li.py
+    analysis2/monocle3_r/pt_collect_yost.py
+    analysis2/monocle3_r/pt_collect_wang.py
+
+-calculate sample-level exhaustion scores with:
+    analysis2/mod_v1/csea_oop_li_updated.py
+    analysis2/mod_v1/csea_oop_yost_updated.py
+    analysis2/mod_v1/csea_oop_wang_updated.py
+
+-calculate association of genes / tfs with sample-level exhaustion using (in 'analysis2/mod_v1/'):
+    python run.py {config.json}  # e.g. config_li_tf.json
+
+-run overlap analysis between two tumor datasets and between tumor & viral, using (in 'analysis2/mod_v1/'):
+    python3 run2.py tumor_tumor_overlap tumor_tumor_overlap.json
+    python3 run2.py tumor_viral_overlap tumor_viral_overlap_li_wang.json

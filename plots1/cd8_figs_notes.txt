@@ -1,0 +1,8 @@
+
+
+li_output_filename = '.../data/li_data/li_t_monocle1.h5ad'
+
+yost_output_filename = '.../data/yost_data/yost_t_monocle1_v2.h5ad'
+
+wang_output_filename = '.../data/wang_data/wang_t_monocle1.h5ad'
+

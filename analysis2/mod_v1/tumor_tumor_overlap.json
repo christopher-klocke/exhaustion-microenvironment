@@ -1,0 +1,13 @@
+{
+  "files": {
+    "dataset1_results": "/Users/klockec/OneDrive - Oregon Health & Science University/data/analysis_files/p3/mod1/li_parallel_tfs_run4/combined_bh.csv",
+    "dataset2_results": "/Users/klockec/OneDrive - Oregon Health & Science University/data/analysis_files/p3/mod1/yost_parallel_tfs_run4/combined_bh.csv",
+    "dataset1_links": "/Users/klockec/OneDrive - Oregon Health & Science University/data_backup_rws07890/data_january2023_backup/data/analysis_files/p3/pyscenic_runs/p3/li_run/ctx_output1.gmt",
+    "dataset2_links": "/Users/klockec/OneDrive - Oregon Health & Science University/data_backup_rws07890/data_january2023_backup/data/analysis_files/p3/pyscenic_runs/p3/yost_bcc_run1/ctx_output1.gmt",
+    "out_dir": "/Users/klockec/OneDrive - Oregon Health & Science University/data/analysis_files/p3/mod1/tumor_tumor_overlap_run6/"
+  },
+  "parameters": {
+    "tf_num": 1389,
+    "celltypes_compare": ["B_cells", "macrophage", "CD8_T_cells", "NK"]
+  }
+}

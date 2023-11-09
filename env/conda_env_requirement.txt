@@ -1,0 +1,12 @@
+# Note: run all conda installation steps first, then use pip at the end
+conda create -n MY_CONDA_ENVIRONMENT python=3.7
+conda activate MY_CONDA_ENVIRONMENT
+conda install -c anaconda numpy
+conda install -c anaconda pandas
+conda install -c conda-forge loompy
+conda install -y -c anaconda cytoolz
+conda install seaborn scikit-learn statsmodels numba pytables
+conda install -c conda-forge python-igraph leidenalg
+conda install -c bioconda harmonypy
+/path/to/miniconda3/envs/MY_CONDA_ENVIRONMENT/bin/pip install scanpy
+/path/to/miniconda3/envs/MY_CONDA_ENVIRONMENT/bin/pip install pyscenic
