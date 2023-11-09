@@ -1,7 +1,7 @@
 {
   "files": {
     "full_adata_filename": "/Users/klockec/OneDrive - Oregon Health & Science University/data_backup_rws07890/data_january2023_backup/data/li_data/li_dd_viz_ready_regs_updated.h5ad",
-    "out_dir": "/Users/klockec/OneDrive - Oregon Health & Science University/data/analysis_files/p3/mod1/li_parallel_gene_run4/"
+    "out_dir": "/Users/klockec/OneDrive - Oregon Health & Science University/data/analysis_files/p3/mod1/li_parallel_gene/"
   },
   "samples": {
     "high": ["p27", "p23", "p25"],

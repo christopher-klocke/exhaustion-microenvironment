@@ -1,17 +1,13 @@
-""" run with 'sc2' conda env 
-
-caffeinate -i python3 csea_oop_li_updated.py >csea_oop_li4_output.log 2>&1 &
+"""-run with 'sc2' conda env
 #nohup python3 csea_oop_li_updated.py >csea_oop_li4_output.log 2>&1 &
-
-save-as of 'csea_oop_li1.py'
 """
-
-import logging 
-
+# set up logging
+import logging
 logging.basicConfig(filename='csea_oop_li4.log', filemode='w', level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
 logging.info('run start')
 
+# import statements
 import cell_enrichment_utils_oop as ceu_oop
 
 #li_path = '/Users/klockec/Documents/data/li_data/' ## file path for rws07890

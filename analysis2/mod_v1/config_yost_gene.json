@@ -1,7 +1,7 @@
 {
   "files": {
     "full_adata_filename": "/Users/klockec/OneDrive - Oregon Health & Science University/data_backup_rws07890/data_january2023_backup/data/yost_data/yost_bcc_full_processed_dd_regs_mod2.h5ad",
-    "out_dir": "/Users/klockec/OneDrive - Oregon Health & Science University/data/analysis_files/p3/mod1/yost_parallel_gene_run4/"
+    "out_dir": "/Users/klockec/OneDrive - Oregon Health & Science University/data/analysis_files/p3/mod1/yost_parallel_gene/"
   },
   "samples": {
     "high": ["su013", "su008", "su014"],

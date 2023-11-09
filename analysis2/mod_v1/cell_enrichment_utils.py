@@ -1,3 +1,4 @@
+# import statements
 import os
 import scanpy as sc
 import pandas as pd 
@@ -183,14 +184,10 @@ def add_celltypes(
     category_convert: bool = False
 ): 
     """
-    
-    given adata with leiden clusters but no celltype labels, and 
+    -given adata with leiden clusters but no celltype labels, and
     dict mapping celltypes to leiden cluster IDs
-    
-    add celltypes to adata in adata.obs['celltype']
-
-    celltype_dict ## dict with celltype string as key and list of leiden as value 
-
+    -add celltypes to adata in adata.obs['celltype']
+    -celltype_dict ## dict with celltype string as key and list of leiden as value
     """
 
     ## build lookup dictionary from input dictionary 
@@ -288,39 +285,23 @@ def cell_enrichment_correlation(
 
     correlation_dict = {}
 
-    for cell_type in enrich_dict['gene_sets'].keys(): 
-
+    for cell_type in enrich_dict['gene_sets'].keys():
         act_df = enrich_dict['gene_sets'][cell_type]
-
         pt_df = enrich_dict['pseudotime']
-
-        if len(pt_df.columns) != len(act_df.index): 
-
+        if len(pt_df.columns) != len(act_df.index):
             print("Sample IDs do not match")
-
             ## remove any sample IDs not present in pseudotime ranking 
             samples_remove_act = [i for i in list(act_df.columns) if i not in pt_df.columns] ## can do at higher level -- running step repeatedly #######
-                
             print("Samples removed from activity score dataframe: " + str(samples_remove_act)) ###
-
-            for i in samples_remove_act: 
-
+            for i in samples_remove_act:
                 act_df = act_df.drop(i, axis=1)
-
             samples_remove_pt = [i for i in list(pt_df.columns) if i not in act_df.columns]
-
             print("Samples removed from pseudotime dataframe for cell type " + cell_type + ": " + str(samples_remove_pt))
-
-            for i in samples_remove_pt: 
-
+            for i in samples_remove_pt:
                 pt_df = pt_df.drop(i, axis=1)
-
         #assert list(pt_df.columns) == list(act_df.columns), "Check matching of sample IDs" ######
-
         for i in list(act_df.index): ## iterate through gene sets
-
             rho, p = spearmanr(pt_df.T.to_numpy(), act_df.loc[i, :].to_numpy()) ## calculate Spearman Rank correlation and corresponding p-value
-
             if permute: 
                 print('running permutations (this part may take a while)...')
                 rho_values = []
@@ -329,32 +310,26 @@ def cell_enrichment_correlation(
                     np.random.shuffle(shuffled)
                     rho_x, p_x = spearmanr(pt_df.T.to_numpy(), shuffled)
                     rho_values.append(rho_x)
-
                 rho_values = np.asarray(rho_values)
                 if rho > 0: 
                     p_perm = sum(rho_values >= rho) / n_perm
-
                 elif rho < 0: 
                     p_perm = sum(rho_values <= rho) / n_perm
-                
                 else: 
                     logging.warning('rho is exactly zero')
                     p_perm = 0.5 ######## FIX #########
 
                 mean_rho = np.mean(rho_values)
-
-                ## add results to dictionary
+                # add results to dictionary
                 if cell_type in correlation_dict.keys(): 
                     correlation_dict[cell_type][i] = (rho, p, p_perm, mean_rho) ## add to results dictionary
                 else: 
                     correlation_dict[cell_type] = {}
                     correlation_dict[cell_type][i] = (rho, p, p_perm, mean_rho) ## add to results dictionary
-
                 print('permutation complete -- celltype: ' + cell_type + ' gene set: ' + i)
 
-            else: 
-
-                ## add results to dictionary
+            else:
+                # add results to dictionary
                 if cell_type in correlation_dict.keys(): 
                     correlation_dict[cell_type][i] = (rho, p) ## add to results dictionary
                 else: 
@@ -558,7 +533,7 @@ def csea_wrapper(
     else: 
         logging.error('valid gene set anndata not provided')
 
-    ## remove 'inf' pseudotime values 
+    # remove 'inf' pseudotime values
     if remove_inf: 
         adata_pt = adata_pt[adata_pt.obs[pt_name] != float(inf_name)]
 
@@ -567,26 +542,19 @@ def csea_wrapper(
             adata_pt = adata_pt[adata_pt.obs['leiden'] != i] ## more efficient / pythonic way to do this -- list comparison -- not if/else, use list comprehension or R-like vector comparison 
 
     logging.info('running in pseudotime mode')
-
     pt_cell_gmt_filename = results_dir + 'pt_cell_gmt.gmt'
     create_cell_gmt(adata=adata_pt, outfile=pt_cell_gmt_filename, sample_id_name=sample_id)
     adata_mod_pseudotime = create_cell_adata(adata=adata_pt, mode='pseudotime')
-
     cell_enrichment_wrapper_pt = CSEAPyWrapper()
     cell_enrichment_wrapper_pt.csea(adata_mod_pseudotime, reactome_gmt=pt_cell_gmt_filename, data_key=pa.SSGSEA_KEY, weigted_score_type=0, n_processes=1) ## typo in 'weighted' #####
-    adata_mod_pseudotime.write_h5ad(results_dir + 'cell_enrichment_pt.h5ad') ## write to pseudotime output .h5ad file 
-
+    adata_mod_pseudotime.write_h5ad(results_dir + 'cell_enrichment_pt.h5ad') ## write to pseudotime output .h5ad file
     logging.info('pseudotime section complete')
     logging.info('running in gene set mode')
-
     add_celltypes(adata=adata_act, celltype_dict=celltype_dict)
-
     ## need to iterate through, selecting one cell type at a time
-    ## need cell-type-specific cell set .gmt files 
-
+    ## need cell-type-specific cell set .gmt files
     adata_mod_regulons = create_cell_adata(adata=adata_act, mode='gene_sets')
     cell_types_list = list(set(list(adata_mod_regulons.var['celltype'])))
-
     celltypes_filename = results_dir + 'celltype_files.txt'
     if os.path.exists(celltypes_filename):
         os.remove(celltypes_filename)
@@ -601,73 +569,34 @@ def csea_wrapper(
         cell_enrichment_wrapper_regulons.csea(adata_celltype_mod, reactome_gmt=celltype_gmt_filename, data_key=pa.SSGSEA_KEY, weigted_score_type=0, n_processes=1) ## typo in 'weighted' #####
         outfile = results_dir + 'cell_enrichment_activity_' + celltype + '.h5ad' ##### 
         adata_celltype_mod.write_h5ad(outfile)
-
         with open(results_dir + 'celltype_files.txt', 'a') as output1: 
             output1.write(outfile + '\n')
 
     logging.info('gene set section complete')
-
-    ## create enrichment dictionary 
+    # create enrichment dictionary
     cell_enrichment_dict = create_enrichment_dict(
         adata_mod_pt=(results_dir + 'cell_enrichment_pt.h5ad'), 
         gene_sets_adata_list=(results_dir + 'celltype_files.txt'))
 
-    ## remove PBMC samples
+    # remove PBMC samples
     samples_remove_pt = [i for i in list(cell_enrichment_dict['pseudotime'].columns) if i[-4:] == 'PBMC']
-
-    for i in samples_remove_pt: 
-
+    for i in samples_remove_pt:
         cell_enrichment_dict['pseudotime'] = cell_enrichment_dict['pseudotime'].drop(i, axis=1)
-
     logging.info('calculating correlations...')
-
     results_dict = cell_enrichment_correlation(
         enrich_dict = cell_enrichment_dict, permute=True, 
         n_perm=set_n_perm)
-
     logging.info('writing in-process results to file...')
-
     export_results_csv(scores_dict=results_dict, out_dir=results_dir, 
         permute=True)
-
     outfile = results_dir + 'results_permute.csv'
-
-    df = pd.read_csv(outfile) 
-
+    df = pd.read_csv(outfile)
     results_df = add_fdr_perm(res_df=df, df_in=True, alpha=alpha)
-
     logging.info('writing final results to file...')
-    
     export_results_csv(scores_df=results_df, out_dir=results_dir, 
         permute=True, fdr=True)
 
     logging.info('CSEA complete. ')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 def get_significant_results(scores_dict, alpha=0.05):
@@ -699,33 +628,22 @@ def plot_scores(
     enrich_dict['gene_sets'][cell_type] -- pandas df with activity values 
 
     correlation_dict[cell_type][i] = (rho, p) ## add to results dictionary
-
     """
 
     rho = results_dict[celltype][gene_set][0]
     p = results_dict[celltype][gene_set][1]
-
     logging.info('cell type: ' + celltype + '\n' + 'gene set: ' + gene_set + '\n' + 'rho: ' + str(rho) + '\n' + 'p-value: ' + str(p))
-
     act_df = enrich_dict['gene_sets'][celltype]
     pt_df = enrich_dict['pseudotime']
-
-    if len(pt_df.columns) != len(act_df.index): 
-
+    if len(pt_df.columns) != len(act_df.index):
         print("Sample IDs do not match")
-
         ## remove any sample IDs not present in pseudotime ranking 
         samples_remove_act = [i for i in list(act_df.columns) if i not in pt_df.columns] ## can do at higher level -- running step repeatedly #######
-                
         logging.warning("Samples removed from activity score dataframe: " + str(samples_remove_act)) ###
-
         for i in samples_remove_act: 
             act_df = act_df.drop(i, axis=1)
-
         samples_remove_pt = [i for i in list(pt_df.columns) if i not in act_df.columns]
-
         logging.warning("Samples removed from pseudotime dataframe for cell type " + celltype + ": " + str(samples_remove_pt))
-
         for i in samples_remove_pt: 
             pt_df = pt_df.drop(i, axis=1)
 
@@ -749,39 +667,7 @@ def plot_scores(
         plt.title(title_text)
         plt.show(block=True)
 
-def add_fdr_correction(res_dict): 
-    """ Add FDR-adjusted p-values to results dictionary -- no -- return df -- update 
-
-    input is output dictionary from 'cell_enrichment_correlation()'
-
-    output is same dictionary, with adjusted p values added -- no -- return df
-
-    can be used as input into 'export_results.csv()' 
-    
-    
-
-
-
-    pull out all p-values from dictionary -- in labeled and organized way
-
-    run correction
-
-    put back in 
-
-
-
-    can use pandas df -- column to track celltype, column for regulon, column for p values
-
-    can run one correction on p value vector, add adjusted p values as another column 
-
-    then subset out by celltype column (index df), put back into dict by match? 
-
-    not the most efficient, but it will work -- can optimize later -- runtime will be short anyway 
-
-    """
-
-    ## create dataframe 
-
+def add_fdr_correction(res_dict):
     col_names = ['celltype', 'gene_set', 'rho', 'p_value']
     df = pd.DataFrame(columns=col_names)
 
@@ -789,29 +675,20 @@ def add_fdr_correction(res_dict):
         for gene_set in res_dict[celltype].keys(): 
             res = res_dict[celltype][gene_set]
             #df = df.append({'celltype': celltype, 'gene_set': gene_set, 'rho': res[0], 'p_value': res[1]}, ignore_index=True)
-
             df_add = pd.DataFrame([[celltype, gene_set, res[0], res[1]]], columns=['celltype', 'gene_set', 'rho', 'p_value'])
             df = pd.concat([df, df_add])
 
-    ## run p-value correction on dataframe column, create adjusted p-value column 
-
+    # run p-value correction on dataframe column, create adjusted p-value column
     correction_input = df['p_value'].to_numpy()
-
     reject, pvals_corrected, alphacSidak, alphacBonf = multipletests(correction_input, alpha=0.05, method='fdr_bh') ## CHECK METHOD CHOICE ('fdr_bh' vs. 'fdr_by')
-
     df['adjusted_p_value'] = pvals_corrected
     df['reject'] = reject
-
-    ## data from df back into dictionary 
-
-    ## 'reject' is boolean vector, true for those than can be rejected 
-
-    ## 'pvals_corrected' is adjusted p-values 
-
+    #data from df back into dictionary
+    #'reject' is boolean vector, true for those than can be rejected
+    #'pvals_corrected' is adjusted p-values
     #multipletests(pvals, alpha=0.05, method='hs', is_sorted=False, returnsorted=False)
 
     #return res_dict
-
     return df 
 
 def export_results_csv2(
@@ -824,12 +701,9 @@ def export_results_csv2(
     Input file is output dictionary from 'cell_enrichment_correlation()' 
 
     out_dir is string desribing path to a directory -- output .csv files 
-    written here 
-
-
+    written here
 
     dict[celltype][gene_set] = (rho, p)
- 
     """
 
     if fdr: 

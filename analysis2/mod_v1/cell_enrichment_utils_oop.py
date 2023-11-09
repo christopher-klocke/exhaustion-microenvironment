@@ -1,5 +1,5 @@
 """adapted from 'cell_enrichment_utils.py'"""
-
+# import statements
 import os
 from statistics import correlation
 from unittest import result
@@ -211,19 +211,6 @@ class CellTypesActivity():
         logging.info('gene set section complete')
 
 
-"""delete modified anndatas and text file afterward -- keep data on permutations though (log?) 
-
-add option to not add cell types -- if this column already exists in act anndata
-
-should write to files and read from them to save ram, then delete all afterward? 
-or just keep in ram? design with options to run either way? not too hard to add
-
-also set this up so that CSEA can be run once and stored, and then correlation() can load those 
-results from file. or can just run csea without correlation. etc. keep it modular 
-
-"""
-
-
 class RunCSEA(): 
     """docstring"""
     def __init__(
@@ -268,10 +255,7 @@ class RunCSEA():
                     act_data: Optional[CellTypesActivity] = None, 
                     export_enrich_values: bool = True, 
                     n_perm: Optional[int] = None
-    ): 
-        """
-        
-        """
+    ):
         if permute: 
             if pt_data == None or act_data == None: 
                 logging.error('"pt_data" and "act_data" must be provided as arguments in permutation mode.')

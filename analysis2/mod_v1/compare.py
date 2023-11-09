@@ -1,5 +1,4 @@
 """run with 'sc2' conda environment """
-
 # import statements
 import logging
 import json
@@ -12,6 +11,7 @@ import scipy
 import scipy.stats as stats
 from statsmodels.stats.multitest import multipletests
 import time
+
 
 # function definitions
 def adata_split(
@@ -42,9 +42,6 @@ def adata_split(
     return adata_high, adata_low
 
 def setup(config_file: str):
-    """
-
-    """
     config = json.load(config_file)
     full_adata_filename = config['files']['full_adata_filename']
     out_dir = config['files']['out_dir']
@@ -63,9 +60,6 @@ def cell_count_checks(
         adata_high: AnnData,
         adata_low: AnnData
 ):
-    """
-
-    """
     pass
 
 def run_mw_test(elem, vecA, vecB):
@@ -100,9 +94,6 @@ def calc_scores(
         mode: str,
         cell_threshold: int = 10
 ):
-    """
-
-    """
     celltype_dfs = []
     for celltype in celltypes:
         print('calculating scores for celltype: ' + celltype)
@@ -166,9 +157,6 @@ def pval_correct(
         sort: bool = False,
         only_sig: bool = True
 ):
-    """
-
-    """
     correction_input = results['p_value'].to_numpy()
     reject, pvals_corrected, alphacSidak, alphacBonf = multipletests(correction_input, alpha=alpha, method=method)
     results['adjusted_p_value'] = pvals_corrected
@@ -180,9 +168,6 @@ def pval_correct(
     return results
 
 def analyze(config_file: str):
-    """
-
-    """
     adata_high, adata_low, out_dir, celltypes, mode, cell_threshold = setup(config_file)
     #cell_count_checks(adata_high, adata_low)
     results = calc_scores(adata_high=adata_high, adata_low=adata_low, celltypes=celltypes, mode=mode, cell_threshold=cell_threshold)
@@ -194,8 +179,6 @@ def analyze(config_file: str):
 # main function definition
 def main():
     tic = time.perf_counter()
-
-
     toc = time.perf_counter()
     timer = toc - tic
     #display_results(ligand_scores=scores, runtime=timer)

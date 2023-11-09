@@ -1,5 +1,4 @@
 """ run with 'sc2' conda environment"""
-
 #  import statements
 import logging
 import json
@@ -10,13 +9,11 @@ import time
 import networkx as nx
 import matplotlib.pyplot as plt
 
+
 #  function definitions
 def gmt_to_dict(
         gmt_filename: str
 ):
-    """
-
-    """
     gmt_dict = {}
     with open(gmt_filename, 'r') as read_file:
         for line in read_file:
@@ -29,9 +26,6 @@ def gmt_to_dict(
     return gmt_dict
 
 def setup(config_file: str):
-    """
-
-    """
     config = json.load(config_file)
     results1 = pd.read_csv(config['files']['dataset1_results'])
     results2 = pd.read_csv(config['files']['dataset2_results'])
@@ -51,9 +45,6 @@ def overlap_stage1(
         direction: str = 'high',
         alpha: float = 0.05
 ):
-    """
-
-    """
     res1 = res1[['celltype', 'tf', 'direction', 'adjusted_p_value']]  # select necessary columns
     res2 = res2[['celltype', 'tf', 'direction', 'adjusted_p_value']]
     res1 = res1[res1['adjusted_p_value'] < alpha]  # only significant results
@@ -132,9 +123,6 @@ def pval_correct(
         method: str = 'fdr_bh',
         alpha: float = 0.05
 ):
-    """
-
-    """
     correction_input = results['p_value'].to_numpy()
     reject, pvals_corrected, alphacSidak, alphacBonf = multipletests(correction_input, alpha=alpha, method=method)
     results['adjusted_p_value'] = pvals_corrected
@@ -149,11 +137,9 @@ def find_grn_links(
         self_links: bool = False
 ):
     """
-    takes a list of significant shared tfs as input
-
-    also takes 2 tf-target link dictionaries as input
-
-    returns any tf-target links within list of transcription factors as list of 2-tuples
+    -takes a list of significant shared tfs as input
+    -also takes 2 tf-target link dictionaries as input
+    -returns any tf-target links within list of transcription factors as list of 2-tuples
     """
     shared_links = []
     for tf in tf_list:
@@ -177,32 +163,21 @@ def grn_viz(
         edges: list,
         show: bool = True
 ):
-    """
-
-    """
     #G = nx.from_edgelist(edges)
     #G = nx.DiGraph(G)  ##
-
     G = nx.DiGraph()
-
-
     G.add_edges_from(edges)
-
     seed = 13648  # Seed random number generators for reproducibility
     font_size = 4.5
     node_color = "blue"
     node_size = 350
     spacing = 0.7
-
     pos = nx.spring_layout(G, seed=seed, k=spacing)
     #pos = nx.shell_layout(G)
     #pos = nx.spectral_layout(G)
-
     #cmap = plt.cm.plasma
     cmap = plt.cm.Blues
-
     node_sizes = [node_size] * len(G)
-
     #nodes = nx.draw_networkx_nodes(G, pos, node_size=node_sizes, node_color="indigo")
     nodes = nx.draw_networkx_nodes(G, pos, node_color=node_color, node_size=node_sizes, alpha=0.6, label=True)
     edges = nx.draw_networkx_edges(
@@ -215,18 +190,13 @@ def grn_viz(
         edge_cmap=cmap,
         width=2,
     )
-
     nx.draw_networkx_labels(G, pos, font_size=font_size)
-
     #nx.draw_networkx(G, width=weights*1)
     #nx.draw_networkx(G)
     if show:
         plt.show()
 
 def overlap_analysis(config_file: str):
-    """
-
-    """
     results1, results2, links1, links2, out_dir, celltypes, tf_num = setup(config_file)
 
     #  stage 1
@@ -236,57 +206,38 @@ def overlap_analysis(config_file: str):
     s1 = pval_correct(s1, method='bonferroni')
     s1.sort_values(by='celltype', inplace=True)
     s1.sort_values(by='adjusted_p_value', inplace=True)
-
     tfs_high.to_csv(out_dir + 'stage1_tfs_high.csv')
     tfs_low.to_csv(out_dir + 'stage1_tfs_low.csv')
-
     print(s1)
     s1.to_csv(out_dir + 'stage1_results.csv')
-
     #  stage 2
     s2 = overlap_stage2(links1=links1, links2=links2, celltypes=celltypes, s1_res=s1)
     print(s2)
     s2.to_csv(out_dir + 'stage2_results.csv')
-
-
-
-
-
     #mac_high_tfs = list(tfs_high[tfs_high['celltype'] == 'macrophage']['tf'])
     #print(mac_high_tfs)
     #mac_high_links = find_grn_links(tf_list=mac_high_tfs, links1=links1, links2=links2)
     #print(mac_high_links)
-
     #mac_high_nodes_cut = ['STAT3', 'FOXP3', 'NFKB1', 'NFKB2', 'IRF1', 'FOSL2', 'CEBPB', 'ETV3']
     #mac_high_links_cut = [i for i in mac_high_links if (i[0] in mac_high_nodes_cut) and i[1] in mac_high_nodes_cut]
-
     #grn_viz(nodes=mac_high_tfs, edges=mac_high_links)
     #grn_viz(nodes=mac_high_tfs, edges=mac_high_links_cut)
-
-
-
     #mac_low_tfs = list(tfs_low[tfs_low['celltype'] == 'macrophage']['tf'])
     #print(mac_low_tfs)
     #mac_low_links = find_grn_links(tf_list=mac_low_tfs, links1=links1, links2=links2)
     #print(mac_low_links)
-
     #mac_low_nodes_cut = ['EBF1', 'LYL1', 'ATF1']
     #mac_low_links_cut = [i for i in mac_low_links if (i[0] in mac_low_nodes_cut) and i[1] in mac_low_nodes_cut]
-
     #grn_viz(nodes=mac_low_tfs, edges=mac_low_links_cut)
-
 
 #  main function definition
 def main():
     tic = time.perf_counter()
-
     toc = time.perf_counter()
     timer = toc - tic
     # display_results(ligand_scores=scores, runtime=timer)
     # save_results()
 
-
 #  run main function
 if __name__ == "__main__":
     main()
-
