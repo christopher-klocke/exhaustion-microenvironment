@@ -1,5 +1,7 @@
 """
-This package is used to do pathway enrichment analysis by adoptiong ccommonly used algorithms.
+This package is used to do pathway enrichment analysis by adopting ccommonly used algorithms.
+
+Imported from Reactome. 
 """
 import cProfile
 import os
